@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Doctor Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+.card {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px;
+    background: #f5f5f5;
+    transition: 0.3s;
+}
+
+.high-risk {
+    border-left: 6px solid red;
+}
+
+.moderate-risk {
+    border-left: 6px solid orange;
+}
+
+.low-risk {
+    border-left: 6px solid green;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1 style="text-align:center;">👨‍⚕️ Doctor Dashboard</h1>
+
+<div id="patientList"></div>
+
+<script>
+
+function showNotification(message){
+
+    const notif = document.createElement("div")
+    notif.innerText = message
+
+    notif.style.position = "fixed"
+    notif.style.top = "20px"
+    notif.style.right = "20px"
+    notif.style.background = "#10B981"
+    notif.style.color = "white"
+    notif.style.padding = "12px 20px"
+    notif.style.borderRadius = "8px"
+    notif.style.boxShadow = "0px 4px 10px rgba(0,0,0,0.2)"
+
+    document.body.appendChild(notif)
+
+    setTimeout(()=>{
+        notif.remove()
+    },3000)
+}
+
+if(localStorage.getItem("new_report") === "true"){
+    showNotification("🔔 New patient report received!")
+    localStorage.removeItem("new_report")
+}
+
+let lastPatientId = null
+
+async function loadPatients(){
+
+    const res = await fetch("http://127.0.0.1:5000/patients")
+    const data = await res.json()
+
+    const container = document.getElementById("patientList")
+    container.innerHTML = ""
+
+    // 🔔 Notification
+    if(data.length > 0){
+
+    const latestPatient = data[0]   // newest record
+
+        if(lastPatientId && lastPatientId !== latestPatient.email){
+            showNotification("🔔 New patient report received!")
+        }
+
+        lastPatientId = latestPatient.email
+    }
+
+   data.forEach((p, index) => {
+
+    let isNew = index === 0 ? "new-patient" : ""
+
+    let riskClass = "low-risk"
+
+    if(p.risk && p.risk.toLowerCase().includes("high")){
+        riskClass = "high-risk"
+    }
+    else if(p.risk && p.risk.toLowerCase().includes("moderate")){
+        riskClass = "moderate-risk"
+    }
+
+    // 🧠 SHORT SUMMARY (FIRST LINE ONLY)
+    let formattedExplanation = ""
+
+    if(p.explanation){
+
+        formattedExplanation = p.explanation
+            .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")   // bold
+            .replace(/\n\*/g, "<br>•")               // bullet *
+            .replace(/\n\+/g, "<br>&nbsp;&nbsp;+")   // sub points +
+            .replace(/\n/g, "<br>")                  // line breaks
+    }
+
+    container.innerHTML += `
+    <div class="card ${riskClass} ${isNew}">
+        <h3>Patient Report</h3>
+
+        <p><b>Email:</b> ${p.email}</p>
+        <p><b>Age:</b> ${p.age}</p>
+        <p><b>BP:</b> ${p.bp}</p>
+        <p><b>Creatinine:</b> ${p.creatinine}</p>
+        <p><b>Glucose:</b> ${p.glucose}</p>
+
+        <p><b>Risk:</b> ${p.risk}</p>
+
+        <div style="margin-top:10px; font-size:14px; line-height:1.5;">
+            ${formattedExplanation}
+        </div>
+
+        <a href="mailto:${p.email}">
+            <button style="margin-top:10px;">Contact Patient</button>
+        </a>
+    </div>
+    `
+})
+
+}
+
+loadPatients()
+
+// 🔁 Auto refresh
+setInterval(loadPatients, 5000)
+
+</script>
+
+</body>
+</html>

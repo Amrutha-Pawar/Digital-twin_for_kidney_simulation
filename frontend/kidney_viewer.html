@@ -1,0 +1,39 @@
+<div id="kidney3D"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000)
+
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth,500)
+
+document.getElementById("kidney3D").appendChild(renderer.domElement)
+
+const light = new THREE.DirectionalLight(0xffffff,1)
+scene.add(light)
+
+const loader = new THREE.GLTFLoader()
+
+loader.load('kidney.glb',function(gltf){
+
+scene.add(gltf.scene)
+
+})
+
+camera.position.z = 3
+
+function animate(){
+
+requestAnimationFrame(animate)
+
+renderer.render(scene,camera)
+
+}
+
+animate()
+
+</script>

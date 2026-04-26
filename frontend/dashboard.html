@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Doctor Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<h1>Doctor Dashboard</h1>
+
+<div class="dashboard-grid">
+
+<div class="card">
+<h3>Patient Name</h3>
+<p id="d_name"></p>
+</div>
+
+<div class="card">
+<h3>Risk Level</h3>
+<p id="d_risk"></p>
+</div>
+
+<div class="card">
+<h3>Health Score</h3>
+<p id="d_score"></p>
+</div>
+
+<div class="card">
+<h3>CKD Stage</h3>
+<p id="d_stage"></p>
+</div>
+
+<div class="card">
+<h3>AI Report</h3>
+<pre id="d_ai"></pre>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+document.getElementById("d_name").innerText =
+localStorage.getItem("name")
+
+document.getElementById("d_risk").innerText =
+localStorage.getItem("risk")
+
+document.getElementById("d_score").innerText =
+localStorage.getItem("health_score")
+
+document.getElementById("d_stage").innerText =
+localStorage.getItem("ckd_stage")
+
+document.getElementById("d_ai").innerText =
+localStorage.getItem("explanation")
+
+</script>
+
+</body>
+</html>

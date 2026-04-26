@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kidney Report</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div id="reportContent">
+
+    <div class="report-container">
+
+        <h1 style="text-align:center;">🏥 Kidney Health Report</h1>
+        <hr>
+
+        <!-- PATIENT DETAILS -->
+        <div class="report-card">
+            <h2>Patient Details</h2>
+            <p><strong>Name:</strong> <span id="r_name"></span></p>
+            <p>Age: <span id="r_age"></span></p>
+            <p>Weight: <span id="r_weight"></span></p>
+            <p>Blood Pressure: <span id="r_bp"></span></p>
+            <p>Creatinine: <span id="r_creatinine"></span></p>
+            <p>Glucose: <span id="r_glucose"></span></p>
+            <p>Hydration: <span id="r_hydration"></span></p>
+        </div>
+
+        <!-- RISK -->
+        <div class="report-card">
+            <h2>Kidney Risk Assessment</h2>
+            <p id="riskLevel" class="risk-box"></p>
+        </div>
+
+        <!-- SCORE -->
+        <div class="report-card">
+            <h2>Health Score</h2>
+            <p id="healthScore"></p>
+        </div>
+
+        <!-- STAGE -->
+        <div class="report-card">
+            <h2>CKD Stage</h2>
+            <p id="ckdStage"></p>
+        </div>
+
+        <!-- AI REPORT -->
+        <div class="report-card">
+            <h2>AI Medical Analysis</h2>
+            <pre id="aiMessage"></pre>
+        </div>
+
+        <!-- SIMULATION -->
+        <div class="report-card">
+            <h2>Kidney Future Simulation (30 Days)</h2>
+            <canvas id="simulationChart"></canvas>
+        </div>
+
+            <!-- BUTTONS -->
+        <div style="text-align:center; margin: 30px;">
+            <button onclick="downloadReport()">Download Report</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- SCRIPTS -->
+<script src="js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let simDataRaw = localStorage.getItem("simulation");
+    let simData = [];
+
+    if (simDataRaw && simDataRaw !== "undefined") {
+        simData = JSON.parse(simDataRaw);
+    }
+
+    if (simData.length > 0) {
+
+        const ctx = document.getElementById('simulationChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: simData.map((_, i) => "Day " + (i + 1)),
+                datasets: [
+                    {
+                        label: 'GFR Prediction',
+                        data: simData,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Safe Zone (90+)',
+                        data: simData.map(() => 90),
+                        borderDash: [5, 5]
+                    },
+                    {
+                        label: 'Risk Zone (60)',
+                        data: simData.map(() => 60),
+                        borderDash: [5, 5]
+                    },
+                    {
+                        label: 'Critical Zone (30)',
+                        data: simData.map(() => 30),
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+    }
+</script>
+
+</body>
+</html>
